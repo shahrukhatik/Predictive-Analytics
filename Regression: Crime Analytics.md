@@ -43,3 +43,100 @@ findings which may be viewed in the appendix (Model 7, Final Findings). Populati
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T1Crime.png?raw=true" width="500" title="hover text">
 
+# Methodology 
+## Variable Selection and Transform Methodology
+Our research question stands to try and achieve the best possible fit in trying to explain
+the variation of crime throughout the United States. This section goes through a variety of
+techniques used as well the criterion for the final model selected. The entirety of the research
+was conducted using the statistical programming language, R.
+
+### Sequential Procedures:
+Backward, Forward and Stepwise[8] procedures were used to find a group of variables that
+were significant in explaining the response. Forward sequential procedure starts with no
+variables in the model and continually adds the largest significant partial F until no other
+variables are significant or all the variables are included in the model. Backward sequential
+procedure starts with every variable and removes variables with the smallest significant
+partial F. It will continue removing variables until all remaining variables are significant or
+all the variables have been removed. Stepwise regression starts with no predictors in the
+model and then at each step along the way either enter or remove a predictor based on the
+partial F-tests. The procedure stops when no more predictors can be justifiably entered or
+removed from the model, thereby leading to a ”final model.”
+
+### Transformations:
+In order to understand the relationships of our covariates and improve the fit and
+prediction capabilities of the model; two transformations were used using the Box-Cox and
+Box-Tidwell procedures[9].
+
+#### Box-Cox Procedure:
+The Box-Cox procedure performs a transformation on our response where we can model
+our objective function as follows:
+
+#### Box-Tidwell Procedure:
+Box-Tidwell has the same goal as to Box-cox. The difference is that Box-Tidwell finds a
+power transformation for some or all the predictors in the data. This power transformation
+on X has the following form:
+
+## Modeling Methodology:
+
+### Multiple Linear Regression
+
+To investigate the variation of violent crimes per population given a multitude of
+independent variables, a multiple linear regression model[5] was employed using a OLS
+estimate. Our linear model form can be written as:
+
+### Weighted Least Squares Regression:
+Weighted least squares[5] is an extension of ordinary least squares in which the errors
+covariance matrix is allowed to be different to an identity matrix. Weighted least squares
+occurs when all the off-diagonal entries of Ω (the correlation matrix of the residuals) are
+null; the variances of the observations (along the covariance matrix diagonal) may still be
+unequal (heteroscedasticity). We define a weight matrix W as:
+
+### Ridge Regression:
+A variation of multiple linear regression, Ridge regression is an alternative but biased[10]
+approach to treat multicollinearity in our data. Our objective function in ridge are as
+follows:
+
+### Principle Components Regression:
+Principle component regression is yet another biased estimation procedure that can be
+used to reduce the effect of collinearity. Our model becomes:
+
+## Diagnostics and Model Selection Methodology
+A number of tests were used to assess the validity of the model. A variety of tests were
+used to assess the assumptions of linear regression. It is important to note that the
+significance level of α is assumed to be 0.05. The tests used were as follows:
+
+Global F-Test: The Global F-Test[11] is a test for overall significance. It validates whether
+any of the regressors have any importance in explaining our response. The null hypothesis
+this F test assumes all covariates from β1 = β2 = ...βk = 0 whereas the alternate hypothesis
+is that there exists atleast one covariate from β1...βk where βk 6= 0.
+
+Partial F-Test: Partial F tests[11] are used whether a single or group of variables are
+significant in explaining are response. Our null hypothesis for this test assumes that β1∗ = 0
+whilst are alternate being β1∗ not equal to 0 where β1* is the group of variables being tested for
+significance in explaining our response. This test is the primary test used in our variable
+selection procedure methods.
+
+Wald–Wolfowitz runs test: The Wald–Wolfowitz runs test[12] is a non-parametric statistical
+test that checks a randomness hypothesis for a two-valued data sequence. It can be used to
+test the hypothesis that the elements of the sequence are mutually independent. The run
+test is based on the null hypothesis that each element in the sequence is independently
+drawn from the same distribution.
+
+Breusch-Pagen: The Breusch-Pagen[13] tests whether the variance of the errors from a
+regression is dependent on the values of the independent variables. The test statistic is
+asymptotically distributed as χ2(p−1) under the null hypothesis of homoskedasticity. This test
+was conducted using the package car in R.
+
+Goldfield-Quandt Test: The Goldfeld–Quandt test[14] checks for homoscedasticity in
+regression analyses. It does this by dividing a dataset into two parts or groups and
+comparing variances amongst the groups. The null hypothesis for this test assumes
+constant variance.
+
+Shapiro-Wilk Test: The Shapiro–Wilk test[15] is a test of normality. The null-hypothesis of
+this test is that the population is normally distributed. 
+
+The final model selection criterion was based on adjusted R2 and MSE. MSE was also
+used to compare the biased approaches to the unbiased approaches while the adjusted R2
+and MSE was used in conjunction to select the best model among the best linear unbiased
+estimations.
+
