@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/IntroCrime.png?raw=true" width="200" title="hover text">
+
 # Introduction
 
 In 1991, crime rate’s in the United States of America reached it’s peak before eventually falling into it’s lasting decreasing trend into the 21st century. It is important to understand
