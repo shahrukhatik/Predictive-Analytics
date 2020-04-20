@@ -12,8 +12,8 @@ The Labeled data set contains 1,000 rows and 3,138 columns. The first column is 
 
 Data Labeling Methods:
 To build the final prediction model, it was determined that a sample size of only 1,000 labeled observations was quite small. To increase the number of observations used, it was important that some variation of the 10,000 unlabeled observations were included. Two methods were ultimately utilized to do this: hand labeling and modeled predictions.
-<p align="left">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/RHW.png?raw=true" width="125" title="hover text">
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/RHW.png?raw=true" width="250" title="hover text">
 To implement the hand labeled solution, the 10,000 unlabeled observations were divided equally amongst group members. Each row was plotted, resulting in an image resembling Figure 2. The approximate time taken was 3-4 hours per group member, and 16 hours total to label the data. Since there are time constraints on the project as a whole, and labeling the unlabeled observations was only a small part of the task, a secondary method was introduced.
 
 The secondary method took a random sample of 4,000 observations from our hand labeled data set, and used these 4,000 hand labeled observations to predict the remaining 6,000 unlabeled observations from the Unlabeled data set, to create a total of 10,000 labeled observations from the unlabeled data set. Using an SVM model, the predictions for the 6,000 unlabeled observations were assessed by validating against the 1,000 labeled observations in the Labeled dataset. This process is best described using the Figure 3.  
