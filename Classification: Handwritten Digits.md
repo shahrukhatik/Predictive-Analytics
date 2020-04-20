@@ -44,7 +44,7 @@ We also used 10-Fold cross-validation to test the robustness of our model. Our m
 The highest accuracy is achieved at C = 0.05 before the values tend to decrease as the value of C is higher. Our model averaged about 82.2% accuracy while attempting to predict the test set after tuning the value of C. Our model was then used to predict cases on the original 1000 letters.. For example, our model was able to perform well predicting A's, C’s and E's but had more unsatisfactory performance in differentiating between 1's and I's, D's and O's & O's and 0's. Table 1 is a summary of our top 5 lowest and highest accuracies. As we can see from these tables, although our model does extremely well in classifying particular variables, it fails to differentiate similar letters to numbers. Our overall accuracy on the original labeled dataset is around 79.9% having a 95% confidence interval at around 77.28-82.34%. An overall summary on our accuracy metrics can be seen in Table 2.  
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/SVMTableHW.png?raw=true" width="600" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/SVMTableHW.png?raw=true" width="500" title="hover text">
 
 ## KNN-Process:
 The k-Nearest-Neighbors (KNN) is a non-parametric classification method. By non-parametric we mean that the KNN classification method does not assume a distribution of the data. For a specific object to be classified, its “k” nearest neighbors are retrieved and based on majority voting amongst the data in the neighborhood family; the classification of the specific object is decided. Each object is classified based on an independent trial. For this project, Euclidean distance-based weighting for identifying the nearest k- neighbors was used. In order to apply the KNN method an appropriate value for k should be chosen, and the success of classification is largely dependent on this value. This is because results may change depending on how many nearest neighbors are being classified to the respective class.
@@ -53,7 +53,7 @@ The process for choosing the best “k” value, was to run the algorithm on a 1
 Our overall accuracy on the validation test with KNN is about 75.8% with an upper confidence interval at around 78.4% and a lower confidence interval at 73%. Tables 3 and 4 provide a summary of this information.
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/KNNTableHW.png?raw=true" width="600" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/KNNTableHW.png?raw=true" width="500" title="hover text">
 
 ## Linear Discriminant Analysis:
 
