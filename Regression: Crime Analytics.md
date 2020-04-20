@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/IntroCrime.png?raw=true" width="200" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/IntroCrime.png?raw=true" width="600" title="hover text">
 
 # Introduction
 
