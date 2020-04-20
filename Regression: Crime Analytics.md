@@ -30,7 +30,7 @@ completely at random (MCR). Hence, the dimensions for the final dataset that wil
 interest(response variable) is Violent Crimes Per Population.
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T2Crime.png?raw=true" width="300" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T2Crime.png?raw=true" width="500" title="hover text">
 
 
 ## Exploratory Analysis
@@ -41,5 +41,5 @@ the highest average violent crimes per population were reported in District of C
 findings which may be viewed in the appendix (Model 7, Final Findings). Population density and region both attributed to explain variations of crime rates.
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T1Crime.png?raw=true" width="300" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T1Crime.png?raw=true" width="500" title="hover text">
 
