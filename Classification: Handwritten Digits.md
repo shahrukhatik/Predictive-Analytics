@@ -5,6 +5,9 @@ Handwriting analysis, character recognition, and graphology are all synonyms for
 The purpose of this project is “to construct a classifier that will predict the letter of a handwritten character based on a 56 by 56 bitmap [3]”. To do so, two data sets are given, defined as “Labeled” and “Unlabeled”.
 The Labeled data set contains 1,000 rows and 3,138 columns. The first column is the observation number, which will be ignored throughout the project. This is because each observation is contained within a single row, and isn’t a meaningful predictor. The second column is the character observation, denoted “Letter”. Characters are defined to be single digit alpha-numeric. The remaining 3,136 columns represent individual pixels in a 56x56 bitmap. The column values are binary, denoting “1” for shaded pixels, and “0” for non-shaded or empty pixels. The Unlabeled data set contains 10,000 rows and 3,137 columns. The first columns is the observation number, which is also ignored for the same reason stated above. The main difference between the Labeled and Unlabeled data is that, as the name suggests, there is no character observation column for each observation in the Unlabeled data set. Instead, there are only the remaining 3,136 columns to represent the individual shaded or non-shaded pixels. After reviewing the Labeled observations, it was found that of the 26 alphabetic characters assumed to be included in the data set only 25 were present, since the character “X” was omitted. 10 numeric characters were included in the Labeled data set (0-9). Figure 1 below shows the approximate distribution of the Labeled observations.
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/barplotHW.png?raw=true" width="350" title="hover text">
+
 # Methodology
 
 Data Labeling Methods:
