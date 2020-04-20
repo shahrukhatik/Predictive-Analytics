@@ -29,9 +29,17 @@ of crime, a population and regional attribute were created. A brief description 
 completely at random (MCR). Hence, the dimensions for the final dataset that will be used to explain variation in crime has a total of 55 attributes and 1901 records. Our variable of
 interest(response variable) is Violent Crimes Per Population.
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T2Crime.png?raw=true" width="300" title="hover text">
+
+
 ## Exploratory Analysis
 
 Exploratory analysis was performed to view the general trends of the data and to view where the highest number of responses were coming from. Demonstrated from Figure 1,
 most data is reported from relatively smaller populated areas (Large Towns and Towns, which have populations less than 100000). From table 2, it can be seen that in the 1990’s
 the highest average violent crimes per population were reported in District of Columbia followed by Maryland and Louisiana. Our initial exploratory analysis supported our final
 findings which may be viewed in the appendix (Model 7, Final Findings). Population density and region both attributed to explain variations of crime rates.
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T1Crime.png?raw=true" width="300" title="hover text">
+
