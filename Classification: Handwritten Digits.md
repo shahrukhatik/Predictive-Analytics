@@ -65,10 +65,10 @@ The overall model performance is 72.12% accuracy as seen in Table 6 below.
 However the accuracy rate does vary significantly by character class. The highest class performance is for characters: J,C,L,A,S. Each of these classes has an accuracy rate at or above approximately 90%. It is worth noting that these characters tend to appear more frequently in the data distributions defined previously in the project. The worst class performance is for characters: 1,5,0,9,6. The digit 6 has the highest accuracy rate at approximately 40%. The remaining digits (1,5,0,9) fall significantly below the 40% mark, ranging to the minimum accuracy of 0%. It should be noted that each of the worst performing characters are noticeably digits, so the total count of observations is low to begin with and each subsequent misclassification ultimately represents a large portion of the overall accuracy rate. Each of these character class accuracy rates can be seen in Table 7 below.
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/LDATableHW1.png?raw=true" width="600" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/LDATableHW1.png?raw=true" width="400" title="hover text">
   
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/LDATableHW2.png?raw=true" width="600" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/LDATableHW2.png?raw=true" width="400" title="hover text">
 
 # Conclusion:
 SVM is a popular classification method and has been used in different areas, such as classifying a letter of handwritten alphanumeric character into predefined categories. Using an optimum number of components determined after applying the PCA technique, and also choosing the best candidate kernel for building the model will reduce the computation time. In addition, better results are generated as an effect of using hand labeling the unlabeled data. The results show that the proposed method has an accuracy rate of 79.99%.
