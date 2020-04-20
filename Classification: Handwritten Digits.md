@@ -21,7 +21,7 @@ To implement the hand labeled solution, the 10,000 unlabeled observations were d
 The secondary method took a random sample of 4,000 observations from our hand labeled data set, and used these 4,000 hand labeled observations to predict the remaining 6,000 unlabeled observations from the Unlabeled data set, to create a total of 10,000 labeled observations from the unlabeled data set. Using an SVM model, the predictions for the 6,000 unlabeled observations were assessed by validating against the 1,000 labeled observations in the Labeled dataset. This process is best described using the Figure 3.  
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/FlowchartHW.png?raw=true" width="300" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/FlowchartHW.png?raw=true" width="600" title="hover text">
 
 It was determined that the hand labeled observations (10,000) from the unlabeled dataset had an accuracy of 90.27% while the 6,000 predicted observations had an accuracy rate of around 70%.
 
