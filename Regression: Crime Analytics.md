@@ -171,6 +171,9 @@ regression using an OLS estimate. Our response variable was Number Of Violent Cr
 per population. All of the independent variables and response variables can be seen in the
 appendix. Our model estimated were as follows:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T45.png?raw=true" width="220" title="hover text">
+
 Our initial results can be summarized by saying that given our 55 attributes we can
 currently explain about 69 percent of the variation of crime. The p-value for our global
 F-test is also significant telling us that there exists atleast one regressor that is significant
@@ -185,6 +188,9 @@ will not be a primary concern moving forward due to having a large sample size(B
 test was carried out for every independent variable, and all variables are independently
 drawn from the same distribution.
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/F2.png?raw=true" width="220" title="hover text">
+
 A Box-Cox transformation was carried out on y. The transformation used was log(y) as
 our optimum value of lambda was very close to 0. Similarly, a Box-Tidwell transformation
 was also carried out for every independent variable. Most of the independent variables had
@@ -194,14 +200,23 @@ linearity amongst our response and independent variables, the tests for constant
 had still failed. Therefore, a WLS approach was conducted. Below are the results after
 conducting a weighted least squares approach:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T67.png?raw=true" width="220" title="hover text">
+
 As we can see from tables 6, performing a transformation on our response and covariates
 contributed to a better fit. Our R2 and adjusted R2 both increased. In addition, a
 weighted least squares approach had stabilized the variance in the model which can be seen
 by the test results in table 7.
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/F3.png?raw=true" width="220" title="hover text">
+
 Our next process involved selecting the appropriate and significant variables for our final
 model. A forward, backward and stepwise regression procedure was used. Following are the
 comparison of the results using all three methods.
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T8.png?raw=true" width="220" title="hover text">
 
 Based on the results of table 8, an improved model was built using variables selected from
 the stepwise procedure. As all models had very similar R2, adjusted R2 and MSE as
@@ -224,7 +239,8 @@ then that observation is considered to be influential in causing major change in
 the fitted model. (Kutner et. al, 2005).
 
 To find observation that influence all fitted values, We used the Cook’s Distance, Di given
-by: Di =
+by: Di = <p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/Di.png?raw=true" width="220" title="hover text">
 where ei are the residual values, MSE is the mean square error, hii
 is the leverage values and p is the number of regression parameters. It measures the influence
 of ith subject on all the n fitted values. For this research, 4
@@ -233,6 +249,10 @@ identify these observations.
 Based on results from Cook’s distance and DFFIT’s all influential observations that had
 an impact on the fit of our regression were removed. Table 9 demonstrates the results before
 and after influential observation removal.
+  
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T9.png?raw=true" width="220" title="hover text">
+  
 Model 6, also maintains the assumptions tested on model 2 previously before stepwise
 selection.
 
@@ -251,6 +271,9 @@ the variation of crime. The optimum value of λ found for our ridge estimate was
 the optimum number of components for PCR found was 14. More information can be found
 in the appendix. Using these parameters, table 10 summarizes the output from the final
 models that are the top contenders for explaining crime.
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T10.png?raw=true" width="220" title="hover text">
 
 # Conclusion
 
