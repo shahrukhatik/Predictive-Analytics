@@ -82,7 +82,7 @@ power transformation for some or all the predictors in the data. This power tran
 on X has the following form:
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxtid.png?raw=true" width="150" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxtid.png?raw=true" width="200" title="hover text">
 
 ## Modeling Methodology:
 
