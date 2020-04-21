@@ -82,7 +82,7 @@ power transformation for some or all the predictors in the data. This power tran
 on X has the following form:
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxtid.png?raw=true" width="300" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxtid.png?raw=true" width="150" title="hover text">
 
 ## Modeling Methodology:
 
@@ -118,7 +118,7 @@ Principle component regression is yet another biased estimation procedure that c
 used to reduce the effect of collinearity. Our model becomes:
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/pcr.png?raw=true" width="400" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/pcr.png?raw=true" width="150" title="hover text">
 
 ## Diagnostics and Model Selection Methodology
 A number of tests were used to assess the validity of the model. A variety of tests were
