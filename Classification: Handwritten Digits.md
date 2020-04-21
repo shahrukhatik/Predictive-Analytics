@@ -1,6 +1,6 @@
 # Introduction
 
-Handwriting analysis, character recognition, and graphology are all synonyms for “the study of printed and written symbols and writing systems [1]”. These topics have numerous commercial and private applications. The most well-known application of commercial handwriting analysis, is documented within the criminal justice system as a subdivision of forensic science. However, private citizens can also employ handwriting analysis in day to day life, albeit on a more superficial scale. For example, students decoding a professor's handwritten lecture notes or an executive officer reading a message receipt provided by a secretary. Each of these scenarios, both commercial and private, rely on “the principle that no two individuals can produce exactly the same handwriting and that an individual can not exactly reproduce their own handwriting, due to natural deviations otherwise known as variation. [2]”
+Handwriting analysis, character recognition, and graphology are all synonyms for “the study of printed and written symbols and writing systems [1]”. These topics have numerous commercial and private applications. The most well-known application of commercial handwriting analysis, is documented within the criminal justice system as a subdivision of forensic science. However, private citizens can also employ handwriting analysis in day to day life, albeit on a more superficial scale. For example, students decoding a professor's handwritten lecture notes or an executive officer reading a message receipt provided by a secretary. Each of these scenarios, both commercial and private, rely on “the principle that no two individuals can produce exactly the same handwriting and that an individual can not exactly reproduce their own handwriting, due to natural deviations otherwise known as variation.[2]”
 
 The purpose of this project is “to construct a classifier that will predict the letter of a handwritten character based on a 56 by 56 bitmap [3]”. To do so, two data sets are given, defined as “Labeled” and “Unlabeled”. The Labeled data set contains 1,000 rows and 3,138 columns. The first column is the observation number, which will be ignored throughout the project. This is because each observation is contained within a single row, and isn’t a meaningful predictor. The second column is the character observation, denoted “Letter”. Characters are defined to be single digit alpha-numeric. The remaining 3,136 columns represent individual pixels in a 56x56 bitmap. The column values are binary, denoting “1” for shaded pixels, and “0” for non-shaded or empty pixels. The Unlabeled data set contains 10,000 rows and 3,137 columns. The first columns is the observation number, which is also ignored for the same reason stated above. The main difference between the Labeled and Unlabeled data is that, as the name suggests, there is no character observation column for each observation in the Unlabeled data set. Instead, there are only the remaining 3,136 columns to represent the individual shaded or non-shaded pixels. After reviewing the Labeled observations, it was found that of the 26 alphabetic characters assumed to be included in the data set only 25 were present, since the character “X” was omitted. 10 numeric characters were included in the Labeled data set (0-9). Figure 1 below shows the approximate distribution of the Labeled observations.
 
@@ -102,3 +102,531 @@ This was the original source given with the problem statement.
 [14]: https://www.ijraset.com/fileserve.php?FID=11852
 
 [15] https://stats.stackexchange.com/questions/243932/what-is-the-difference-between-svm-and-lda
+
+# Source Code
+
+```{r}
+###############################################################################################
+#################################### "STAT602 Final Project"###################################
+###############################################################################################
+
+###############################################################################################
+############ Mohammad Taheri, Samantha Nystrom, Santosh Chapagain, Shahrukh Khan ##############
+###############################################################################################
+
+
+##Clear the R environment, if required
+rm(list = ls())
+
+
+#####################################################################################
+#####################Install the libraries, if required##############################
+#####################################################################################
+
+if(!require(ggplot2))install.packages("ggplot2")
+if(!require(gridExtra))install.packages("gridExtra")
+if(!require(ggfortify))install.packages("ggfortify")
+if(!require(caret))install.packages("caret")
+if(!require(plyr))install.packages("plyr")
+
+
+###########################################################################################
+###################Read the datasets and split into training and test sets#################
+###########################################################################################
+
+##Set the working directory
+setwd("C:/Users/Santosh Chapagain/OneDrive/SDSU Courses/SDSU SP 2019/Modern Applied Statistics II/Final Project/Final Project")
+
+###The labeled data given to us was used to build models and the unlabled data was predicted from those models
+###The test accuracy was itself not good, so, we had to find other ways to label the unlabeled data
+###Complete the description
+###Define what labeled data is and what validation data is for us
+
+##Read the labeled dataset
+labeledletters<-read.csv("Labels_1_to_10000V3.csv",
+                         header=TRUE,
+                         sep=",")
+
+##Read the validation Dataset
+validationset <- read.csv("original.letters.labeled.csv",
+                          header=TRUE,
+                          sep=",")
+
+#Ignore the rownames if there is any
+rownames(validationset) <- NULL
+
+#Omit the rows with missing values
+labeledletters <- na.omit(labeledletters)
+
+#Convert the letter into lower cases if it is otherwise, for the sake of consistency
+labeledletters$Letter <- tolower(labeledletters$Letter)
+
+#Convert the class of the lable to factor
+labeledletters$Letter <- as.factor(labeledletters$Letter)
+
+###Splitting from train
+set.seed(123)
+
+##create a sample size
+smp_size <- floor(0.70 * nrow(labeledletters))
+
+#Create the train indices
+train_ind <- sample(seq_len(nrow(labeledletters)), 
+                    size = smp_size)
+
+#Create the train and test datasets
+train <- (labeledletters)[train_ind, ]
+test <- (labeledletters)[-train_ind, ]
+
+#Observe the distribution of the labels in the original data, the train data and test data
+plot1<- ggplot(labeledletters, 
+               aes(x = Letter, 
+                   y = (..count..)/sum(..count..))) + 
+        geom_bar(fill="red") + 
+        theme_bw() +
+        labs(y = "Relative frequency", 
+             title = "Unlabeled dataset") + 
+        scale_y_continuous(labels=scales::percent, 
+                           limits = c(0 , 0.15)) +
+        geom_text(stat = "count", 
+                  aes(label = scales:: percent((..count..)/sum(..count..)), 
+                      vjust = -1), 
+                  size=3)+
+        theme(axis.text=element_text(size=12),
+              axis.title = element_text(size=12, face="bold"),
+              plot.title = element_text(hjust = 0.5, size = 14, face="bold"))
+
+plot2<- ggplot(train, 
+               aes(x = Letter, 
+                   y = (..count..)/sum(..count..))) + 
+        geom_bar(fill="navyblue") +
+        theme_bw() +
+        labs(y = "Relative frequency", 
+             title = "Train dataset for unlabeled data") + 
+        scale_y_continuous(labels=scales::percent, 
+                           limits = c(0 , 0.15)) +
+        geom_text(stat = "count", 
+                  aes(label = scales:: percent((..count..)/sum(..count..)), 
+                      vjust = -1), 
+                  size=3)+
+        theme(axis.text=element_text(size=12),
+        axis.title = element_text(size=12, face="bold"),
+        plot.title = element_text(hjust = 0.5, size = 14, face="bold"))
+
+plot3<- ggplot(test, 
+               aes(x = Letter, 
+                   y = (..count..)/sum(..count..))) + 
+        geom_bar(fill="purple") + 
+        theme_bw() +
+        labs(y = "Relative frequency", 
+             title = "Test dataset for unlabeled data") + 
+        scale_y_continuous(labels=scales::percent, 
+                           limits = c(0 , 0.15)) +
+        geom_text(stat = "count", 
+                  aes(label = scales:: percent((..count..)/sum(..count..)), 
+                      vjust = -1), size=3)+
+        theme(axis.text=element_text(size=12),
+        axis.title = element_text(size=12, face="bold"),
+        plot.title = element_text(hjust = 0.5, size = 14, face="bold"))
+
+
+plot4 <- ggplot(validationset, 
+                aes(x = Letter, 
+                    y = (..count..)/sum(..count..))) + 
+  geom_bar(fill="forest green") + 
+  theme_bw() +
+  labs(y = "Relative frequency", 
+       title = "Labeled dataset") + 
+  scale_y_continuous(labels=scales::percent, 
+                     limits = c(0 , 0.15)) +
+  geom_text(stat = "count", 
+            aes(label = scales:: percent((..count..)/sum(..count..)), 
+                vjust = -1), size=3)+
+  theme(axis.text=element_text(size=12),
+        axis.title = element_text(size=12, face="bold"),
+        plot.title = element_text(hjust = 0.5, size = 14, face="bold"))
+
+
+
+#Plot the above 3 plots together
+grid.arrange(plot4,plot1, plot2, plot3, nrow=4)
+
+
+############################################################################################################
+######################################### Sam's Part of Exploratory Analysis################################
+############################################################################################################
+
+#checking accuracy of hand labeling
+labeled2 <- validationset
+setwd("/Data/")
+cvletters<-read.csv("manual1000.csv",header=TRUE,sep=",")
+#dim(cvletters)
+
+
+combo <- cbind(cvletters,labeled2)
+#dim(combo)
+
+#tail(combo)
+#levels(combo$obs)==levels(combo$Letter)
+combo$match <- ifelse(combo$Letter == combo$obs, 0, 1)
+
+#length(levels(combo$obs))
+#length(levels(combo$Letter))
+
+accuracyofhlon1000 <- (1-((sum(combo$match==1))/nrow(combo)))*100
+accuracyofhlon1000
+
+#checking accuracy of each class
+
+improperlylabeled <- subset(combo, match==1)
+properlylabeled <- subset(combo, match==0)
+
+a = count(combo, 'Letter')
+
+y = count(improperlylabeled, 'Letter')
+newy<- merge(x=y,y=a,by=c("Letter"))
+colnames(newy) <- c("Letter", "No.C", "Total")
+z = count(properlylabeled, 'Letter')
+newz<- merge(x=z,y=a,by=c("Letter"))
+colnames(newz) <- c("Letter", "No.C", "Total")
+
+#Claculating misclassification and correct classification percantage
+newy$misclass <- round((newy$No.C/newy$Total)*100,2)
+newz$class <- round((newz$No.C/newz$Total)*100,2)
+
+newy
+newz
+
+#Number of properly labeled versus improperly labeled
+ma=count(combo,'match')
+ma
+
+ggplot(newy, aes(x=Letter,y=No.C))+geom_col()+labs(title="Graph for Incorrectly Labeled Observations (by %)", x="Alpha-Numeric Class", y="Number of Misclassified")
+
+ggplot(newy, aes(x=Letter,y=misclass))+geom_col()+labs(title="Graph for Incorrectly Labeled Observations (by %)", x="Alpha-Numeric Class", y="Number of Misclassified by %")
+
+
+ggplot(newz, aes(x=Letter,y=No.C))+geom_col()+labs(title="Graph for Correctly Labeled Observations (count)", x="Alpha-Numeric Class", y="Number of Misclassified")
+
+ggplot(newy, aes(x=Letter,y=No.C))+geom_col(colour = "black",fill="red")+labs(title="Graph for Incorrectly Labeled Observations (count)", x="Alpha-Numeric Class", y="Number of Misclassified")
+
+ggplot(newy, aes(x=Letter,y=misclass))+geom_col(colour = "black",fill="red")+labs(title="Graph for Incorrectly Labeled Observations (by %)", x="Alpha-Numeric Class", y="Number of Misclassified by %")
+
+
+ggplot(newz, aes(x=Letter,y=No.C))+geom_col(colour = "black", fill="light blue")+labs(title="Graph for Correctly Labeled Observations (count)", x="Alpha-Numeric Class", y="Number of Classified")
+
+
+ggplot(data.frame(newz), aes(x=Letter, y=class)) + geom_col(colour = "black", fill="light blue")+labs(title="Graph for Correctly Labeled Observations %", x="Alpha-Numeric Class", y="% Classified")
+
+
+
+####################################################################################
+##############################Dimension Reduction::PCA##############################
+####################################################################################
+
+# conduct PCA on training dataset
+X <- train[,-1]
+Y <- train[,1]
+
+#Reducing Train using PCA
+train_reduced <- X
+pcaX <- prcomp(train_reduced)
+
+#Plot the first two Principal Components, and see if they make any sense
+##Library ggfortify does the job. Plots the first two PCs
+autoplot(pcaX, data=train, colour='Letter', title="Principal component Score Plot")  
+
+# Creating a datatable to store and plot the No of Principal Components vs Cumulative Variance Explained
+vexplained <- as.data.frame(pcaX$sdev^2/sum(pcaX$sdev^2))
+vexplained <- cbind(c(1:3136),vexplained,cumsum(vexplained[,1]))
+colnames(vexplained) <- c("No_of_Principal_Components",
+                          "Individual_Variance_Explained",
+                          "Cumulative_Variance_Explained")
+
+#Plotting the curve using the datatable obtained
+plot(vexplained$No_of_Principal_Components,
+     vexplained$Cumulative_Variance_Explained*100, 
+     xlim = c(0,3000),type='b',pch=16,
+     xlab = "Principal Components",
+     ylab = "Cumulative Variance Explained (%)",
+     main = 'Principal Components vs Cumulative Variance Explained')
+abline(h=vexplained$Cumulative_Variance_Explained[80]*100, 
+       v = vexplained$No_of_Principal_Components[80],
+       col='red',lwd=2,lty=5)
+
+
+#define where to stop plotting PCs
+cut <- 2000
+#Plot the Cum. variance explained by the 'cut' number of PCs
+plot(vexplained$No_of_Principal_Components[1:cut],
+     vexplained$Cumulative_Variance_Explained[1:cut], 
+     xlim = c(0,cut),type='b',pch=16,
+     xlab = "Principal Componets",
+     ylab = "Cumulative Variance Explained",
+     main = 'Principal Components vs Cumulative Variance Explained')
+abline(h=vexplained$Cumulative_Variance_Explained[80], 
+       v = vexplained$No_of_Principal_Components[80],
+       col='red',lwd=2,lty=5)
+
+#Datatable to store the summary of the datatable obtained
+vexplainedsummary <- vexplained[seq(0,100,10),]
+vexplainedsummary <- vexplainedsummary[-2] #Drop the second column
+
+##Create a PCA matrix for the train data
+train_PCA_matrix <- as.matrix(train_reduced) %*% pcaX$rotation[,1:80]
+##convert the matrix to dataframe
+train_PCA <- data.frame(train_PCA_matrix)
+##Append the classes to the trainPCA data
+train_PCA$Letter <- train[,1]
+
+#Remove the classes from the test data
+test_reduced <- test[,-1]
+#Create a PCA matrix for the test data
+test_PCA_matrix <- as.matrix(test_reduced) %*% pcaX$rotation[,1:80]
+#Convert the matrix to a dataframe
+test_PCA <- data.frame(test_PCA_matrix)
+#Append the classes to the testPCA data
+test_PCA$Letter <- test[,1]
+
+#Same approach as above for the validation dataset
+validationset_reduced <- validationset[,-1]
+validationset_PCA_matrix <- as.matrix(validationset_reduced) %*% pcaX$rotation[,1:80]
+validationset_PCA <- data.frame(validationset_PCA_matrix)
+validationset_PCA$Letter <- validationset[,1]
+
+
+#####################################################################################################
+##################################### MODEL DEVELOPMENT #############################################
+#####################################################################################################
+
+
+#####################################################################################################
+##################################### MODEL 1: SVM with Linear Kernel################################
+#####################################################################################################
+
+
+## Support Vector Machines with Linear Basis Function Kernel
+#Let's call the number of classes N. The samples of your data-set is called M.
+###NC35
+# Say you have 35 classes. The OVO ensemble will be composed of 595 (= 35 * (34) / 2) binary classifiers. 
+#The first will discriminante A from B, the second A from C, and the third B from C.. etc. 
+#Now, if x is to be classified, x is presented to each binary classifier of the ensemble to create a vector of individual classifications, e.g. (A, B, B). 
+#The final step to assign a label to x is the majority voting. In this example, x would belong to class B.
+
+
+#The cost was optimized to 0.05. Optimization is performed below.
+Linear_grid <- expand.grid(C = c(0.05))
+
+#10-fold Cross-validation
+trctrl <- trainControl(method = "cv", number = 10)
+
+#SVM with linear kernel
+svm_Linear <- train(Letter ~., 
+                    data = train_PCA, 
+                    method = "svmLinear",
+                    trControl=trctrl,
+                    tuneGrid = Linear_grid)
+
+
+#SVM with linear kernel
+svm_Linear <- train(Letter ~., 
+                    data = train, 
+                    method = "svmLinear",
+                    trControl=trctrl,
+                    tuneGrid = Linear_grid,
+                    preProcess=c('pca','center','scale'))
+
+
+#Linear grid to optimize the Cost
+# Linear_grid_test <- expand.grid(C = c(0.01,0.025,0.05,0.75,1))
+
+
+
+#Optimize the SVM with Linear Kernel
+# svm_Linear_test <- train(Letter ~., 
+#                          data = train_PCA, 
+#                          method = "svmLinear",
+#                          trControl=trctrl,
+#                          tuneGrid = Linear_grid_test)
+
+
+#plot(svm_Linear_test)
+
+
+#Predict the test data using SVM model with Linear Kernel
+test_pred_Linear <- predict(svm_Linear, newdata = test_PCA)
+
+#Predict the Validation data using SVM model with Linear Kernel
+test_pred_Linear2 <- predict(svm_Linear, newdata = validationset_PCA)
+
+#Build a Confusion Matrix for the test result
+cf_matrix_linear <- confusionMatrix(test_pred_Linear,test_PCA$Letter)
+
+#Build a Confusion Matrix for the Validation result
+cf_matrix_linear2 <- confusionMatrix(test_pred_Linear2,validationset_PCA$Letter)
+
+
+#Function to Plot Confusion Matrix in GGPLOT
+plotConfusionMatrix <- function(cf_matrix){
+  cmf <- as.data.frame(cf_matrix$table)
+  colnames(cmf)<- c("Reference","Prediction","Freq")
+  cm.gg <- ggplot(cmf)+
+    geom_tile(aes(x=Prediction,y=Reference, fill=Freq))+
+    scale_x_discrete(name="Reference (Actual)", position="top")+
+    scale_y_discrete(name="Predicted", limits=rev(levels(cmf$Prediction)))+
+    geom_text(aes(x=Prediction,y=Reference,label=Freq),color="white",size=4.5)
+    print(cm.gg)+
+    ggtitle("Confusion Matrix")+
+    theme(plot.title = element_text(size=18, face="bold", hjust = 0.5),
+            axis.text = element_text(size=16),
+            axis.title = element_text(size=16))
+}
+
+#Plot the confusion matrix for test data set predicted with SVM Linear Kernel
+plotConfusionMatrix(cf_matrix_linear)
+###Overall accuracy obtained is ________%
+
+##Overall Accuracy for the test dataset
+cf_matrix_linear$overall
+
+
+#Plot the confusion matrix for Validation data set predicted with SVM Linear Kernel
+plotConfusionMatrix(cf_matrix_linear2)
+###Overall accuracy obtained is ________%
+
+##Overall Accuracy for the validation dataset
+cf_matrix_linear2$overall
+
+
+#Function to find out the class based accuracy
+class_accuracy <- function(cf_object){
+  class_acc<- vector("list",35)
+  for( i in 1:35){
+    
+    class_acc[[i]] <- round(cf_object$table[i,i]/sum(cf_object$table[,i])*100,2)
+    
+    #print(class_acc)
+    
+  }
+  class_acc <- data.frame(as.matrix(class_acc))
+  class_acc <- cbind(unique(as.data.frame(cf_object$table)$Prediction),class_acc)
+  colnames(class_acc) <- c("Class","Accuracy")
+  rownames(class_acc) <- NULL
+  class_acc
+}
+
+
+#Find the class-based accuracy for the test data predicted using SVM Linear Kernel
+class_accuracy(cf_matrix_linear)
+
+#Find the class-based accuracy for the validation data predicted using SVM Linear Kernel
+class_accuracy(cf_matrix_linear2)
+
+
+# test_pred_Linear2 <- predict(svm_Linear, newdata = validationset_PCA)
+##78.79147 10 FOLD
+# SvmLinear_AccRate2
+##79.69984 10 FOLD
+
+# ##############################################################################################
+# ############################## Model 2: SVM with Radial Kernel ###############################
+# ##############################################################################################
+# 
+# 
+# ####svmRadial tunes over cost and uses a single value of sigma based on kern lab's sigest function. 
+# ###For grid search, tuneLength is the number of cost values to test and for random search it is the total number of (cost, sigma) pairs to evaluate.
+# 
+# grid_radial <- expand.grid(sigma = c(0.006760242),C = c(4))
+# 
+# svm_Radial <- train(Letter ~., data = train_PCA, method = "svmRadial",trControl=trctrl,tuneGrid=grid_radial)
+# trctrl <- trainControl(method = "cv", number = 2)
+# # svm_Radial_test <- train(Letter ~., data = train_PCA, method = "svmRadial",trControl=trctrl,tuneLength=10)
+# test_pred_Radial <- predict(svm_Radial, newdata = test_PCA)
+# test_pred_Radial2 <- predict(svm_Radial, newdata = validationset_PCA)
+# cf_matrix_radial <- confusionMatrix(test_pred_Radial,test_PCA$Letter)
+# cf_matrix_radial2 <- confusionMatrix(test_pred_Radial2,validationset_PCA$Letter)
+# # plot(svm_Radial_test)
+# 
+# #Plot the confusion matrix for test data set predicted with SVM Radial Kernel
+# plotConfusionMatrix(cf_matrix_radial)
+# ###Overall accuracy obtained is ________%
+# 
+# ##Overall Accuracy for the test dataset
+# cf_matrix_radial$overall
+# 
+# 
+# #Plot the confusion matrix for Validation data set predicted with SVM Radial Kernel
+# plotConfusionMatrix(cf_matrix_radial2)
+# ###Overall accuracy obtained is ________%
+# 
+# ##Overall Accuracy for the validation dataset
+# cf_matrix_radial2$overall
+# 
+# 
+# #Find the class-based accuracy for the test data predicted using SVM Radial Kernel
+# class_accuracy(cf_matrix_radial)
+# 
+# #Find the class-based accuracy for the validation data predicted using SVM Linear Kernel
+# class_accuracy(cf_matrix_radial2)
+
+
+#####################################################################################################
+############################## Model3: Linear Discriminant Analysis #########################################
+#####################################################################################################
+
+trctrl <- trainControl(method = "cv", number = 10)
+LDA_Model <- train(Letter ~., data = train_PCA, method = "lda",trControl=trctrl)
+LDA_Predict <- predict(LDA_Model, newdata = test_PCA)
+LDA_Matches <- LDA_Predict == test_PCA$Letter
+LDA_AccRate<- (sum(LDA_Matches, na.rm = TRUE) / nrow(test_PCA)) * 100
+LDA_AccRate
+LDA_Predict2 <- predict(LDA_Model, newdata = validationset_PCA)
+
+cf_matrix_lda <- confusionMatrix(LDA_Predict, test_PCA$Letter)
+cf_matrix_lda2 <- confusionMatrix(LDA_Predict2, validationset_PCA$Letter)
+
+class_accuracy(cf_matrix_lda)
+class_accuracy(cf_matrix_lda2)
+
+plotConfusionMatrix(cf_matrix_lda)
+
+plotConfusionMatrix(cf_matrix_lda2)
+
+######################################################################################################
+############################################### Model4: KNN ##########################################
+######################################################################################################
+
+trctrl <- trainControl(method = "cv", number = 10)
+grid_knn <- expand.grid(k = c(5))
+KNN_Model <- train(Letter ~ ., data = train_PCA, method = "knn",tuneGrid = grid_knn,trControl=trctrl)
+KNN_Predict <- predict(KNN_Model, newdata = test_PCA)
+KNN_Predict2 <- predict(KNN_Model, newdata = validationset_PCA)
+cf_matrix_knn <- confusionMatrix(KNN_Predict,test_PCA$Letter)
+cf_matrix_knn2 <- confusionMatrix(KNN_Predict2,validationset_PCA$Letter)
+# trctrl <- trainControl(method = "cv", number = 2)
+# grid_knn_test <- expand.grid(k = c(3,5,7,9,11))
+# KNN_Model_test <- train(Letter ~ ., data = train_PCA, method = "knn",tuneGrid = grid_knn_test,trControl=trctrl)
+# plot(KNN_Model_test)
+
+#Plot the confusion matrix for test data set predicted with KNN
+plotConfusionMatrix(cf_matrix_knn)
+###Overall accuracy obtained is ________%
+
+##Overall Accuracy for the test dataset
+cf_matrix_knn$overall
+
+
+#Plot the confusion matrix for Validation data set predicted with KNN
+plotConfusionMatrix(cf_matrix_knn2)
+###Overall accuracy obtained is ________%
+
+##Overall Accuracy for the validation dataset
+cf_matrix_knn2$overall
+
+
+#Find the class-based accuracy for the test data predicted using KNN
+class_accuracy(cf_matrix_knn)
+
+#Find the class-based accuracy for the validation data predicted using KNN
+class_accuracy(cf_matrix_knn2)
+```
