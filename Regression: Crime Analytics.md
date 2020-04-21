@@ -118,7 +118,7 @@ Principle component regression is yet another biased estimation procedure that c
 used to reduce the effect of collinearity. Our model becomes:
 
 <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/pcr.png?raw=true" width="150" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/pcr.png?raw=true" width="220" title="hover text">
 
 ## Diagnostics and Model Selection Methodology
 A number of tests were used to assess the validity of the model. A variety of tests were
@@ -160,3 +160,168 @@ used to compare the biased approaches to the unbiased approaches while the adjus
 and MSE was used in conjunction to select the best model among the best linear unbiased
 estimations.
 
+
+# Discussion
+## Multiple Linear Regression
+Our initial data had a total of 55 attributes and 1901 records. It is noted that although
+some variables are on different scales in our data, our primary objective is to find the best
+fit. Centering and scaling the data will not contribute to produce a better fit of our model,
+and hence the data was not standardized. Our first objective was to build a multiple linear
+regression using an OLS estimate. Our response variable was Number Of Violent Crimes
+per population. All of the independent variables and response variables can be seen in the
+appendix. Our model estimated were as follows:
+
+Our initial results can be summarized by saying that given our 55 attributes we can
+currently explain about 69 percent of the variation of crime. The p-value for our global
+F-test is also significant telling us that there exists atleast one regressor that is significant
+in the model, and hence regression can be carried out. Figure 2 shows us the residual plots
+for the full model an we can see that we have a scattered trend in the residual index plot
+indicating appropriateness to carry out regression. However, all the other plots underlay a
+much bigger problem. Both residuals vs Fitted and Scale-location plots tell us that the
+regression does not have a linear relationship between our independent and response and
+that we do not have constant variance. We also do not have normality in our data, but this
+will not be a primary concern moving forward due to having a large sample size(Box, GEP.
+(1953). Individual tests support these claims as seen in Table 5. It is noted that a run’s
+test was carried out for every independent variable, and all variables are independently
+drawn from the same distribution.
+
+A Box-Cox transformation was carried out on y. The transformation used was log(y) as
+our optimum value of lambda was very close to 0. Similarly, a Box-Tidwell transformation
+was also carried out for every independent variable. Most of the independent variables had
+an MLE lambda estimate of 0, and therefore, all of the independent variables were also log
+transformed. Although the transformations had an impact and solved the issue for
+linearity amongst our response and independent variables, the tests for constant variance
+had still failed. Therefore, a WLS approach was conducted. Below are the results after
+conducting a weighted least squares approach:
+
+As we can see from tables 6, performing a transformation on our response and covariates
+contributed to a better fit. Our R2 and adjusted R2 both increased. In addition, a
+weighted least squares approach had stabilized the variance in the model which can be seen
+by the test results in table 7.
+
+Our next process involved selecting the appropriate and significant variables for our final
+model. A forward, backward and stepwise regression procedure was used. Following are the
+comparison of the results using all three methods.
+
+Based on the results of table 8, an improved model was built using variables selected from
+the stepwise procedure. As all models had very similar R2, adjusted R2 and MSE as
+comparison metrics, the most simplest model was selected (Model 5). All variables selected
+can be seen in appendix.
+
+#  Outlier, Leverage and Influential Observations
+
+Our next aspect of trying to improve the fit of the model involved identifying and
+inspecting leverage, outlier and influential observations.
+The leverage value hii measures the distance between the predicted values X for subject i and the means of X values for all subjects. A leverage value is considered large if it is more than twice the mean leverage. Leverage values greater than 2p/n are considered to indicate outlying cases with regards to their X values(Kutner et.al, 2005).
+
+Standardized residual (internally studentized) is the residual divided by estimated standard deviation. As a rule of thumb, the standardized residual less than -2 or greater than
++2 may indicate that the point is an outlier.
+After identifying individuals that were both a combination of an outlier and an influential
+point, these observations were examined using Cook’s Distance and DFFITS. A subject is
+considered to be influential if its exclusion causes major changes in the fitted regression
+model. The rule of thumb is that if the absolute DFFITS value of the ith subject is greater than 2 times square root of p/n
+then that observation is considered to be influential in causing major change in
+the fitted model. (Kutner et. al, 2005).
+
+To find observation that influence all fitted values, We used the Cook’s Distance, Di given
+by: Di =
+where ei are the residual values, MSE is the mean square error, hii
+is the leverage values and p is the number of regression parameters. It measures the influence
+of ith subject on all the n fitted values. For this research, 4
+n was used as a cutoff point to
+identify these observations.
+Based on results from Cook’s distance and DFFIT’s all influential observations that had
+an impact on the fit of our regression were removed. Table 9 demonstrates the results before
+and after influential observation removal.
+Model 6, also maintains the assumptions tested on model 2 previously before stepwise
+selection.
+
+# Multicolinearity
+One of the last diagnostics we wanted to validate was to check for multicollinearity between
+the independent variables. In order to do this, a VIF test was employed along with a
+construction of conditional indices. VIF values greater than 4 is an indication that
+multicollinearaity may be a problem whereas values greater than 10 are an indication of
+severe multicollinearity[16]. Both VIF and conditional indices reported similar results, and a
+VIF table is attached to the appendix for model 6. Variables with a VIF greater than 10
+were removed, followed by corresponding variables with a VIF greater than 8.
+This leads us to our final model, model 7 using the standard multiple linear regression
+with an OLS estimate. Biased estimation approaches such as a ridge regression and principle
+component regression was also fit in order to determine if they may be a fitter fit in explaining
+the variation of crime. The optimum value of λ found for our ridge estimate was 0.086, and
+the optimum number of components for PCR found was 14. More information can be found
+in the appendix. Using these parameters, table 10 summarizes the output from the final
+models that are the top contenders for explaining crime.
+
+# Conclusion
+
+In our research, a variety of models were fit in order to explain the variance of crime. We find
+that selecting model 7, does the best job in explaining the variance of crime. This model
+does not violate the assumptions of linear regression, has a compartively larger adjusted
+R2 value than models 1-5 and has a negligble decrease in performance after treating for
+multicollinearity against model 6. It also has a marginally lower MSE than model 8 and
+9(Ridge and PCR) counterparts, however one can argue that the prediction accuracy of Ridge
+and PCR may be better. We conclude saying that according to our model, we can roughly
+explain about 72.61 percent of the variation of crime given our independent variables. The
+most statistically significant variables are Percentage of children born that are never married,
+Number of people below poverty line, percentage racial groups present in community, number
+of non-violent crimes, living in the west/south region, percentage of adults who are highly
+educated and median rent. A full summary of this result can also be found in the appendix.
+
+# Appendix
+
+Initial Data Variables: householdsize, racepctblack, racePctWhite, racePctAsian, racePctHisp, agePct12t21, agePct12t29, agePct16t24, agePct65up, medIncome, pctWSocSec, pctWPubAsst, pctWRetire, medFamInc, perCapInc, whitePerCap , blackPerCap, IndianPerCap, AsianPerCap, OtherPerCap, HispPerCap, NumUnderPov, PctNotHSGrad, PctBSorMore,
+PctUnemployed, MalePctNevMarr, TotalPctDiv, PersPerFam, PctWorkMom, PctKidsBornNeverMar, NumImmig, PctSpeakEnglOnly, PctNotSpeakEnglWell ,PctLargHouseFam, MedNumBR, PctHousOccup, PctHousOwnOcc, PctVacMore6Mos, MedRent, NumInShelters,
+PctForeignBorn, PctBornSameState, PctUsePubTrans, burglaries, larcenies, autoTheft, arsons , populationCatLarge.City, populationCatLarge.Town, populationCatMetropolis ,populationCatTown, regionsNortheast, regionsSouth, regionsWest,Violent Crimes
+
+# References
+
+[1]Becker, Gary S., ”Crime and Punishment: An Economic Approach,” Journal of Political
+Economy 76 (1968), 169-217.
+
+[2]Merton, Robert, ”Social Structure and Anomie,” American Sociological Review 3 (1938),
+672-682.
+
+[3]Shaw, Clifford, and Henry McKay, Juvenile Delinquency and Urban Areas (Chicago:
+University of Chicago Press, 1942).
+
+[4][Buczak and Gifford 2010] Buczak, A. L. and Gifford, C. M., Fuzzy Association Rule
+Mining for Community Crime Pattern Discovery. In Workshop on Intelligence and Security
+Informatics at 16th Conference on Knowledge Discovery and Data Mining (ISI-KDD-2010).
+Washington DC. July 2010.
+
+[5]Rawlings, John O., Sastry G. Pantula, and David A. Dickey. Applied Regression
+Analysis: A Research Tool. 2nd ed. New York: Springer, 1998.
+
+[6](Box, GEP. (1953). Non-normality and tests on variances. Biometrika 40:318-335.)
+
+[7][Redmond and Highley 2009] Redmond, M., and Highley, T., Empirical Analysis of
+Case-Editing Approaches for Numeric Prediction. In International Joint Conference on
+Computer, Information, and Systems Sciences and Engineering (CISSE) subconference
+International Conference on Systems, Computing Sciences and Software Engineering
+(SCSS). University of Bridgeport, CT, December 2009.
+
+[8]Miller, A. (2002). Subset Selection in Regression Second Edition. Chapman and
+Hall/CRC, Boca Raton.
+
+[9]Box, G. E., Cox, D. R. (1964). An analysis of transformations. Journal of the Royal
+Statistical Society. Series B (Methodological), 211-252.
+
+[10]A. E. Hoerl and R. W. Kennard. Ridge regression: Applications to nonorthogonal
+problems. Technometrics, 12:69–82, 1970a.
+
+[11]Markowski, Carol A; Markowski, Edward P. (1990). ”Conditions for the Effectiveness of
+a Preliminary Test of Variance”
+
+[12]Magel, RC; Wibowo, SH (1997). ”Comparing the Powers of the Wald-Wolfowitz and
+Kolmogorov-Smirnov Tests”. Biometrical Journal. 39 (6): 665–675.
+
+[13]Breusch, T. S.; Pagan, A. R. (1979). ”A Simple Test for Heteroskedasticity and Random
+Coefficient Variation”. Econometrica. 47 (5): 1287–1294.
+
+[14]Goldfeld, Stephen M.; Quandt, R. E. (June 1965). ”Some Tests for Homoscedasticity”.
+Journal of the American Statistical Association. 60 (310): 539–547.
+
+[15]Shapiro, S. S.; Wilk, M. B. (1965). ”An analysis of variance test for normality (complete
+samples)”. Biometrika. 52 (3–4): 591–611.
+
+[16]Fox, J. and Monette, G. (1992) Generalized collinearity diagnostics. JASA, 87, 178–183
