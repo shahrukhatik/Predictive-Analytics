@@ -359,3 +359,433 @@ Journal of the American Statistical Association. 60 (310): 539–547.
 samples)”. Biometrika. 52 (3–4): 591–611.
 
 [16]Fox, J. and Monette, G. (1992) Generalized collinearity diagnostics. JASA, 87, 178–183
+
+# Source Code
+
+```{r,echo=FALSE,message=F, warning=F} 
+rm(list = ls())
+##Functions
+ggplotRegression <- function (fit) 
+{
+require(ggplot2)
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+geom_point() + stat_smooth(method = "lm", col = "red") + labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),"Intercept =",signif(fit$coef[[1]],5 )," Slope =",signif(fit$coef[[2]], 5)," P =",signif(summary(fit)$coef[2,4], 5)))
+}
+NE.name <- c("Connecticut","Maine","Massachusetts","New Hampshire",
+             "Rhode Island","Vermont","New Jersey","New York",
+             "Pennsylvania")
+NE.abrv <- c("CT","ME","MA","NH","RI","VT","NJ","NY","PA")
+NE.ref <- c(NE.name,NE.abrv)
+
+MW.name <- c("Indiana","Illinois","Michigan","Ohio","Wisconsin",
+             "Iowa","Kansas","Minnesota","Missouri","Nebraska",
+             "North Dakota","South Dakota")
+MW.abrv <- c("IN","IL","MI","OH","WI","IA","KS","MN","MO","NE",
+             "ND","SD")
+MW.ref <- c(MW.name,MW.abrv)
+
+S.name <- c("Delaware","District of Columbia","Florida","Georgia",
+            "Maryland","North Carolina","South Carolina","Virginia",
+            "West Virginia","Alabama","Kentucky","Mississippi",
+            "Tennessee","Arkansas","Louisiana","Oklahoma","Texas")
+S.abrv <- c("DE","DC","FL","GA","MD","NC","SC","VA","WV","AL",
+            "KY","MS","TN","AR","LA","OK","TX")
+S.ref <- c(S.name,S.abrv)
+
+W.name <- c("Arizona","Colorado","Idaho","New Mexico","Montana",
+            "Utah","Nevada","Wyoming","Alaska","California",
+            "Hawaii","Oregon","Washington")
+W.abrv <- c("AZ","CO","ID","NM","MT","UT","NV","WY","AK","CA",
+            "HI","OR","WA")
+W.ref <- c(W.name,W.abrv)
+
+region.list <- list(
+  Northeast=NE.ref,
+  Midwest=MW.ref,
+  South=S.ref,
+  West=W.ref)
+##Packages
+library(MASS)
+library(dvmisc)
+library(maps)
+library(ggplot2)
+library(plotly)
+library(openintro)
+library(datasets)
+library(dplyr)
+library(BBmisc)
+library(pander)
+library(lmtest)
+library(car)
+library(olsrr)
+library(gridExtra)
+library(snpar)
+library(perturb)
+library(regclass)
+library(corrplot)
+library(caret)
+library(tidyverse)
+library(broom)
+library(glmnet)
+library(genridge)
+library(pls)
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+##Crime data V1 and V2, building dataset
+CrimeDataV1<-read.csv("/Users/shahrukh/Desktop/Classes/Spring 2019 Classes/Regression Analysis/Project/crimedata.csv",header=TRUE,sep=",")
+CrimeDataV1$state <-  as.factor(CrimeDataV1$state)
+CrimeDataV1[which(CrimeDataV1$population>=0 & CrimeDataV1$population<20001), 'populationCat'] <- "Town"
+CrimeDataV1[which(CrimeDataV1$population>20000 & CrimeDataV1$population<100001), 'populationCat'] <- "Large Town"
+CrimeDataV1[which(CrimeDataV1$population>100000 & CrimeDataV1$population<300001), 'populationCat'] <- "City"
+CrimeDataV1[which(CrimeDataV1$population>300000 & CrimeDataV1$population<1000001), 'populationCat'] <- "Large City"
+CrimeDataV1[which(CrimeDataV1$population>1000000), 'populationCat'] <- "Metropolis"
+CrimeDataV1$populationCat <- as.factor(CrimeDataV1$populationCat)
+CrimeDataV2 <- CrimeDataV1[!(apply(CrimeDataV1, 1, function(y) any(y == "?"))),]
+CrimeDataV2 <- CrimeDataV2[,-2]
+CrimeDataV2 <- CrimeDataV2[,-(11:12)]
+CrimeDataV2$burglaries <-  as.numeric(CrimeDataV2$burglaries)
+CrimeDataV2$autoTheft <-  as.numeric(CrimeDataV2$autoTheft)
+CrimeDataV2$arsons <-  as.numeric(CrimeDataV2$arsons)
+CrimeDataV2$larcenies <-  as.numeric(CrimeDataV2$larcenies)
+CrimeDataV2$MedRent <-  as.numeric(CrimeDataV2$MedRent)
+CrimeDataV2$MedNumBR <-  as.numeric(CrimeDataV2$MedNumBR)
+CrimeDataV2$NumImmig <-  as.numeric(CrimeDataV2$NumImmig)
+CrimeDataV2$OtherPerCap <-  as.numeric(CrimeDataV2$OtherPerCap)
+CrimeDataV2$AsianPerCap <-  as.numeric(CrimeDataV2$AsianPerCap)
+CrimeDataV2$indianPerCap <-  as.numeric(CrimeDataV2$indianPerCap)
+CrimeDataV2$blackPerCap <-  as.numeric(CrimeDataV2$blackPerCap)
+CrimeDataV2$whitePerCap <-  as.numeric(CrimeDataV2$whitePerCap)
+CrimeDataV2$perCapInc <-  as.numeric(CrimeDataV2$perCapInc)
+CrimeDataV2$medFamInc <-  as.numeric(CrimeDataV2$medFamInc)
+CrimeDataV2$medIncome <-  as.numeric(CrimeDataV2$medIncome)
+#converting to state names and adding region
+CrimeDataV2$state <- abbr2state(CrimeDataV2$state)
+CrimeDataV2$regions <- sapply(CrimeDataV2$state,function(x) names(region.list)[grep(x,region.list)])
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+###prepping matrix
+CrimeDataV2$regions <- as.factor(CrimeDataV2$regions)
+CrimeDataV2 <- CrimeDataV2[,-1]
+CrimeDataV3 <- model.matrix(~.,data=CrimeDataV2)
+CrimeDataV3 <- data.frame(CrimeDataV3)
+CrimeDataV3 <- CrimeDataV3[,-1]
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+fit <- lm((ViolentCrimesPerPop)~., data=CrimeDataV3)
+summary(fit)
+par(mfrow = c(2, 3))
+residuals<- resid(lm(lm(ViolentCrimesPerPop~., data=CrimeDataV3))) 
+plot(residuals, xlab = "Violent CrimesPerPop", ylab = "Residuals",main="Residual Index Plot")
+plot(fit,which=1)
+plot(fit,which=2)
+plot(fit,which=3)
+car::ncvTest(fit)
+gqtest(fit)
+shapiro.test(fit$residuals)
+dwtest(fit)
+bc = boxcox(fit)
+# best.lam=bc$x[which(bc$y==max(bc$y))]
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+CrimeDataV3[,1:47] <- CrimeDataV3[,1:47] + 0.01
+CrimeDataV3[,1:47] <- log(CrimeDataV3[,1:47])
+CrimeDataV3[,48] <- log(CrimeDataV3[,48])
+fit <- lm((ViolentCrimesPerPop)~., data=CrimeDataV3)
+wts <- 1/fitted(lm(abs(residuals(fit)) ~ fitted(fit)))^2
+fit2 <- lm((ViolentCrimesPerPop)~., data=CrimeDataV3,weights=wts)
+summary(fit2)
+par(mfrow = c(2, 2))
+residuals<- resid(lm(lm(ViolentCrimesPerPop~., data=CrimeDataV3,weights=wts))) 
+plot(residuals, xlab = "Log ViolentCrimesPerPop", ylab = "Residuals",main="Residual Index Plot")
+plot(fit2,which=1)
+plot(fit2,which=2)
+plot(fit2,which=3)
+car::ncvTest(fit2)
+gqtest(fit2)
+shapiro.test(fit2$residuals)
+pander(shapiro.test(fit2$residuals))
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+
+##Model Selection Procedures
+
+# forward_selection <- ols_step_forward_p(fit2)
+
+lm1 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack+pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire+OtherPerCap+blackPerCap+agePct12t29+perCapInc+PctHousOwnOcc,data=CrimeDataV3)
+lm1_weights <- 1/fitted(lm(abs(residuals(lm1)) ~ fitted(lm1)))^2
+lm1 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack+pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire+OtherPerCap+blackPerCap+agePct12t29+perCapInc+PctHousOwnOcc,data=CrimeDataV3,weights=lm1_weights)
+
+summary(lm1)
+
+# backward_selection <- ols_step_backward_p(fit2)
+
+lm2 <- lm(ViolentCrimesPerPop~householdsize+racepctblack+racePctWhite+racePctAsian+racePctHisp+agePct12t21+agePct16t24+agePct65up+medIncome+pctWPubAsst+pctWRetire+perCapInc+indianPerCap+AsianPerCap+OtherPerCap+NumUnderPov+PctBSorMore+MalePctNevMarr+TotalPctDiv+PctKidsBornNeverMar+PctLargHouseFam+MedNumBR+PctHousOccup+PctHousOwnOcc
++MedRent+autoTheft+arsons+regionsNortheast+regionsSouth+regionsWest,data=CrimeDataV3)
+lm2_weights <- 1/fitted(lm(abs(residuals(lm2)) ~ fitted(lm2)))^2
+lm2 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack+pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire+OtherPerCap+blackPerCap+agePct12t29+perCapInc+PctHousOwnOcc,data=CrimeDataV3,weights=lm2_weights)
+
+summary(lm2)
+
+# step_selection <- ols_step_both_p(fit2)
+
+lm3 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
++pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire,data=CrimeDataV3)
+lm3_weights <- 1/fitted(lm(abs(residuals(lm3)) ~ fitted(lm3)))^2
+lm3 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
++pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire,
+data=CrimeDataV3,weights=lm3_weights)
+
+summary(lm3)
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+# ols_plot_resid_stand(lm3)
+# OUT <- ols_plot_resid_stand(lm3) 
+# lm3.outliers <- OUT$outliers
+# H.diagnal <- data.frame(observation=1:1901, hatvalues(lm3))
+# merged <- merge(H.diagnal,lm3.outliers)
+# hdm <- mean(H.diagnal$hatvalues.lm3.)*2
+# influential_observations <- subset(merged, hatvalues.lm3. > hdm )
+# 
+# n <- nrow(CrimeDataV3)
+# k <- length(lm3$coefficients)-1
+# cv <- 2*sqrt(k/n)
+# 
+# library(calibrate)
+# plot(dffits(lm3), 
+#      ylab = "Standardized dfFits", xlab = "Index", 
+#      main = paste("Standardized DfFits, \n critical value = 2*sqrt(k/n) = +/-", round(cv,3)))
+# abline(h = cv, lty = 2)
+# abline(h = -cv, lty = 2)
+# #code for labeling points
+# textxy(as.numeric(names(dffits(lm3)[which(dffits(lm3) < -cv | dffits(lm3) > cv)])), 
+#        dffits(lm3)[which(dffits(lm3) < -cv | dffits(lm3) > cv)], 
+#        as.numeric(names(dffits(lm3)[which(dffits(lm3) < -cv | dffits(lm3) > cv)])), cex=0.7,offset = -1)
+
+##Influential Observations Removal and comparison
+par(mfrow = c(1, 1))
+cooksd <- cooks.distance(lm3)
+sample_size <- nrow(CrimeDataV3)
+# plot(cooksd, pch="*", cex=2, main="Influential Obs by Cooks distance")  # plot cook's distance
+# abline(h = 4/sample_size, col="red")  # add cutoff line
+# text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>4/sample_size, names(cooksd),""), col="red")
+influential <- as.numeric(names(cooksd)[(cooksd > (4/sample_size))])
+
+CrimeDataV4 <- CrimeDataV3[-influential, ]
+lm4 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
+          +pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire,data=CrimeDataV4)
+lm4_weights <- 1/fitted(lm(abs(residuals(lm4)) ~ fitted(lm4)))^2
+lm4 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
+          +pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+ MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire, data=CrimeDataV4,weights=lm4_weights)
+plot3<-ggplotRegression(lm3)
+plot4<-ggplotRegression(lm4)
+gridExtra::grid.arrange(plot3, plot4, ncol=2)
+summary(lm4)
+par(mfrow = c(2, 2))
+residuals<- resid(lm(lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack+pctWSocSec+regionsNortheast+PctHousOccup+PctLargHouseFam+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+ MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+medIncome+AsianPerCap+pctWRetire, data=CrimeDataV4,weights=lm4_weights))) 
+plot(residuals, xlab = "Log ViolentCrimesPerPop", ylab = "Residuals")
+plot(lm4,which=1)
+plot(lm4,which=2)
+plot(lm4,which=3)
+car::ncvTest(lm4)
+gqtest(lm4)
+shapiro.test(lm4$residuals)
+
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+#Testing for Multicollinearity
+
+VIF(lm4)
+# colldiag(lm4,add.intercept = FALSE)
+# M <- model.matrix.lm(lm4)
+# M <- cor(M)
+# corrplot(M, method = "circle")
+# # ols_eigen_cindex(lm4)
+# # # ols_plot_diagnostics(lm4)
+# # # ols_coll_diag(lm4)
+# ols_vif_tol(lm4)
+
+#remove rent,assisted income, and never married kids.
+lm5 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
++pctWSocSec+regionsNortheast+PctHousOccup+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+AsianPerCap+pctWRetire,data=CrimeDataV4)
+
+lm5_weights <- 1/fitted(lm(abs(residuals(lm5)) ~ fitted(lm5)))^2
+
+lm5 <- lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack
++pctWSocSec+regionsNortheast+PctHousOccup+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+AsianPerCap+pctWRetire,
+data=CrimeDataV4,weights=lm5_weights)
+
+summary(lm5)
+VIF(lm5)
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+y <- CrimeDataV4$ViolentCrimesPerPop
+x <- CrimeDataV4 %>% dplyr::select(PctKidsBornNeverMar,TotalPctDiv,NumUnderPov,racePctWhite,racePctHisp,racepctblack,pctWSocSec,regionsNortheast,PctHousOccup,PctLargHouseFam,MedRent,autoTheft,pctWPubAsst,regionsSouth,regionsWest,MedNumBR,PctBSorMore,householdsize,MalePctNevMarr,arsons,indianPerCap,medIncome,AsianPerCap,pctWRetire) %>% data.matrix()
+
+library(caret)
+smp_size <- floor(0.70 * nrow(CrimeDataV4))
+train_ind <- sample(seq_len(nrow(CrimeDataV4)), size = smp_size)
+train_crime <-(CrimeDataV4)[train_ind, ]
+test_crime <- (CrimeDataV4)[-train_ind, ]
+##Linear Discriminant Analysis
+trctrl <- trainControl(method = "repeatedcv", number = 10,repeats=3)
+Crime_Ridge_Model <- train(ViolentCrimesPerPop~., data = train_crime, method = "ridge",trControl=trctrl,tuneLength = 30)
+Crime_Ridge_Predict <- predict(Crime_Ridge_Model, newdata = test_crime)
+Crime_Ridge_MSE <- mean((Crime_Ridge_Predict-test_crime$ViolentCrimesPerPop)^2)
+
+trctrl <- trainControl(method = "repeatedcv", number = 10,repeats=3)
+Crime_PCR_Model <- train(ViolentCrimesPerPop~., data = train_crime, method = "pcr",trControl=trctrl,tuneLength = 30)
+Crime_PCR_Predict <- predict(Crime_PCR_Model, newdata = test_crime)
+Crime_PCR_MSE <- mean((Crime_PCR_Predict-test_crime$ViolentCrimesPerPop)^2)
+
+library(DAAG)
+library(lmridge)
+PRESS(lm5)
+sum(press.lmridge(ridgev))
+
+ridgev <- lmridge(ViolentCrimesPerPop~.,data=CrimeDataV4)
+DAAG::press(lm5)
+PRESS <- function(linear.model) {
+    pr <- residuals(linear.model)/(1 - lm.influence(linear.model)$hat)
+    sum(pr^2)}
+
+set.seed(102)
+par(mfrow = c(1, 2))
+fit.ridge=glmnet(x,y,alpha=0)
+plot(fit.ridge,xvar="lambda",label=TRUE)
+cv.ridge=cv.glmnet(x,y,alpha=0)
+plot(cv.ridge)
+# cv.ridge$lambda.min
+# coef(cv.ridge, s=cv.ridge$lambda.min)
+cv.fit <- cv.glmnet(x,y,alpha=0)
+i <- which(cv.fit$lambda == cv.fit$lambda.min)
+mse.min <- cv.fit$cvm[i]
+# cv.fit$cvm[cv.fit$lambda == cv.fit$lambda.min]
+mse.min
+
+set.seed(102)
+pcr_model <- pcr(y~x, scale = TRUE, validation = "CV")
+summary(pcr_model)
+# validationplot(pcr_model, val.type = "MSEP")
+## 8 Components
+mse14comp <- 0.6177^2 
+mse14comp
+
+RMSE <- sqrt(sum(lm5$residuals^2) / lm5$df)
+MSE <- RMSE^2
+ MSE
+RMSE <- sqrt(sum(lm4$residuals^2) / lm4$df)
+MSE <- RMSE^2
+# MSE
+
+# par(mfrow = c(2, 2))
+# residuals<- resid(lm(lm(ViolentCrimesPerPop~PctKidsBornNeverMar+TotalPctDiv+NumUnderPov+racePctWhite+racePctHisp+racepctblack+pctWSocSec+regionsNortheast+PctHousOccup+MedRent+autoTheft+pctWPubAsst+regionsSouth+regionsWest+MedNumBR+PctBSorMore+householdsize+MalePctNevMarr+arsons+indianPerCap+AsianPerCap+pctWRetire,
+# data=CrimeDataV4,weights=lm5_weights))) 
+# plot(residuals, xlab = "Log ViolentCrimesPerPop", ylab = "Residuals")
+# plot(lm5,which=1)
+# plot(lm5,which=2)
+# plot(lm5,which=3)
+# car::ncvTest(lm5)
+# gqtest(lm5)
+# shapiro.test(lm5$residuals)
+# 
+# summary(inflm.SR <- influence.measures(lm5))
+# inflm.SR
+# which(apply(inflm.SR$is.inf, 1, any))
+# dim(dfb <- dfbetas(lm5))
+# rstandard(lm5)
+# rstudent(lm5)
+# dffits(lm5)
+# covratio(lm5)
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+##tryign out SVR
+library(e1071)
+model <- svm(y ~ x, CrimeDataV4)
+ 
+predictedY <- predict(model, CrimeDataV4)
+ 
+error <- CrimeDataV4$ViolentCrimesPerPop - predictedY
+rmse <- function(error)
+{
+  sqrt(mean(error^2))
+}
+ 
+svrPredictionRMSE <- rmse(error)  # 3.157061
+
+tuneResult <- tune(svm, y ~ x,  data = CrimeDataV4,
+              ranges = list(epsilon = seq(0,1,0.1), cost = 2^(2:9))
+)
+print(tuneResult)
+# Draw the tuning graph
+plot(tuneResult)
+```
+
+```{r,echo=FALSE,message=F, warning=F} 
+## extra
+# 
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,1],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,2],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,3],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,5],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,6],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,7],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,8],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,10],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,14],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,15],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,16],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,17],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,18],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,19],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,21],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,22],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,23],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,25],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,26],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,28],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,30],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,31],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,32],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,33],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,34],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,35],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,40],data=CrimeDataV3)
+# plot(x,which=1)
+# x <- lm((ViolentCrimesPerPop)~CrimeDataV3[,43],data=CrimeDataV3)
+# plot(x,which=1)
+```
