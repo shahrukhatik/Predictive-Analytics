@@ -240,7 +240,7 @@ the fitted model. (Kutner et. al, 2005).
 
 To find observation that influence all fitted values, We used the Cook’s Distance, Di given
 by: Di = <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/Di.png?raw=true" width="500" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/Di.png?raw=true" width="200" title="hover text">
 where ei are the residual values, MSE is the mean square error, hii
 is the leverage values and p is the number of regression parameters. It measures the influence
 of ith subject on all the n fitted values. For this research, 4
