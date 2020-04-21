@@ -32,6 +32,8 @@ interest(response variable) is Violent Crimes Per Population.
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/T2Crime.png?raw=true" width="500" title="hover text">
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/F1Crime.png?raw=true" width="500" title="hover text">
 
 ## Exploratory Analysis
 
@@ -71,10 +73,16 @@ Box-Tidwell procedures[9].
 The Box-Cox procedure performs a transformation on our response where we can model
 our objective function as follows:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxcox.png?raw=true" width="500" title="hover text">
+
 #### Box-Tidwell Procedure:
 Box-Tidwell has the same goal as to Box-cox. The difference is that Box-Tidwell finds a
 power transformation for some or all the predictors in the data. This power transformation
 on X has the following form:
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/boxtid.png?raw=true" width="500" title="hover text">
 
 ## Modeling Methodology:
 
@@ -84,6 +92,9 @@ To investigate the variation of violent crimes per population given a multitude 
 independent variables, a multiple linear regression model[5] was employed using a OLS
 estimate. Our linear model form can be written as:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/linreg.png?raw=true" width="500" title="hover text">
+
 ### Weighted Least Squares Regression:
 Weighted least squares[5] is an extension of ordinary least squares in which the errors
 covariance matrix is allowed to be different to an identity matrix. Weighted least squares
@@ -91,14 +102,23 @@ occurs when all the off-diagonal entries of Ω (the correlation matrix of the r
 null; the variances of the observations (along the covariance matrix diagonal) may still be
 unequal (heteroscedasticity). We define a weight matrix W as:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/wls.png?raw=true" width="500" title="hover text">
+  
 ### Ridge Regression:
 A variation of multiple linear regression, Ridge regression is an alternative but biased[10]
 approach to treat multicollinearity in our data. Our objective function in ridge are as
 follows:
 
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/ridge.png?raw=true" width="500" title="hover text">
+
 ### Principle Components Regression:
 Principle component regression is yet another biased estimation procedure that can be
 used to reduce the effect of collinearity. Our model becomes:
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/pcr.png?raw=true" width="500" title="hover text">
 
 ## Diagnostics and Model Selection Methodology
 A number of tests were used to assess the validity of the model. A variety of tests were
