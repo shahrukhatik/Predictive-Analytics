@@ -234,13 +234,12 @@ Standardized residual (internally studentized) is the residual divided by estima
 After identifying individuals that were both a combination of an outlier and an influential
 point, these observations were examined using Cook’s Distance and DFFITS. A subject is
 considered to be influential if its exclusion causes major changes in the fitted regression
-model. The rule of thumb is that if the absolute DFFITS value of the ith subject is greater than 2 times square root of p/n
-then that observation is considered to be influential in causing major change in
+model. The rule of thumb is that if the absolute DFFITS value of the ith subject is greater than 2 times square root of p/n then that observation is considered to be influential in causing major change in
 the fitted model. (Kutner et. al, 2005).
 
 To find observation that influence all fitted values, We used the Cook’s Distance, Di given
 by: Di = <p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/Di.png?raw=true" width="200" title="hover text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/Di.png?raw=true" width="100" title="hover text">
 where ei are the residual values, MSE is the mean square error, hii
 is the leverage values and p is the number of regression parameters. It measures the influence
 of ith subject on all the n fitted values. For this research, 4
