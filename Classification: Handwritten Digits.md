@@ -107,13 +107,8 @@ This was the original source given with the problem statement.
 
 ```{r}
 ###############################################################################################
-#################################### "STAT602 Final Project"###################################
+#################################### "Handwritten Data Project"###################################
 ###############################################################################################
-
-###############################################################################################
-############ Mohammad Taheri, Samantha Nystrom, Santosh Chapagain, Shahrukh Khan ##############
-###############################################################################################
-
 
 ##Clear the R environment, if required
 rm(list = ls())
@@ -630,3 +625,7 @@ class_accuracy(cf_matrix_knn)
 #Find the class-based accuracy for the validation data predicted using KNN
 class_accuracy(cf_matrix_knn2)
 ```
+
+# Contributors
+
+Shahrukh Khan, Samantha Nystrom, Santosh Chapagain
