@@ -1,4 +1,4 @@
-# Introudction
+# Introduction
 
 Let's say are given a set of data. You dont know what each of the columns mean. However, you do know that the objective of the model is to be able to predict Y.
 You are given that Y is the result of a person who either defaulted on a loan or did not. 
