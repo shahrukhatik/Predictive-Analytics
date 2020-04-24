@@ -1,6 +1,32 @@
-# Introductio
+# Introduction
 
 Let's say are given a set of data. You dont know what each of the columns mean. However, you do know that the objective of the model is to be able to predict Y. You are given that Y is the result of a person who either defaulted on a loan or did not. This project is data that is given by a local insurance company for analysis.
+
+# Cleaning Data
+
+# Exploratory Analysis
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/corrplot.png?raw=true" width="500" title="hover text">
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/response.png?raw=true" width="500" title="hover text">
+
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/carcategory.png?raw=true" width="500" title="hover text">
+  
+  
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/day.png?raw=true" width="500" title="hover text">
+  
+  
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/month.png?raw=true" width="500" title="hover text">
+  
+  
+<p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/location.png?raw=true" width="500" title="hover text">
+  
 
 # Source Code
 
