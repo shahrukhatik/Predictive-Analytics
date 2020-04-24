@@ -224,7 +224,7 @@ HX <- holdout_set[[3]]
 </p>
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/day.png?raw=true" width="350" title="hover text">
-  <img src="https://github.com/shahrukhatik/redictive-Analytics/blob/master/Images/month.png?raw=true" width="350" alt="accessibility text">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/month.png?raw=true" width="350" alt="accessibility text">
 </p>
   
 
