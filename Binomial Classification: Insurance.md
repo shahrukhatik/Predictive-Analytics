@@ -217,20 +217,18 @@ HX <- holdout_set[[3]]
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/corrplot.png?raw=true" width="250" title="hover text">
 
-<p align="center">
-  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/response.png?raw=true" width="250" title="hover text">
 
 <p align="center">
+  <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/response.png?raw=true" width="250" title="hover text">
+<p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/carcategory.png?raw=true" width="250" title="hover text">
-  
+  </p>
   
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/day.png?raw=true" width="250" title="hover text">
-  
-  
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/month.png?raw=true" width="250" title="hover text">
-  
+   </p> 
   
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/location.png?raw=true" width="250" title="hover text">
