@@ -221,19 +221,23 @@ As essential to any analysis, it is essential to explore the data. The first plo
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/response.png?raw=true" width="350" alt="accessibility text">
 </p>
 
-As essential to any analysis, it is essential to explore the data. The first plot is a correlation plot of every variable available in the data. As the data consists of about 100 columns, a correlation plot of this magntitude serves the purpose of quickly visually identifying highly correlated variables. As we can see from the correlation plot below, there aren't many highly correlated variables. Light blue refers to positive correlation, while light red refers to negative corelation. As there are no dark colors on the correlation plot, it infers there are not many variables which are strongly correlated with eachother. The second plot shows us the count of the response variables. From this plot we can observe that the data is imbalanced, with much more 0's than 1's.
+From these plots below we can observe that Volkswagen cars are the highest frequency followed by Toyota. Asia is the highest location.
 
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/carcategory.png?raw=true" width="350" title="hover text">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/location.png?raw=true" width="350" alt="accessibility text">
 </p>
 
-As essential to any analysis, it is essential to explore the data. The first plot is a correlation plot of every variable available in the data. As the data consists of about 100 columns, a correlation plot of this magntitude serves the purpose of quickly visually identifying highly correlated variables. As we can see from the correlation plot below, there aren't many highly correlated variables. Light blue refers to positive correlation, while light red refers to negative corelation. As there are no dark colors on the correlation plot, it infers there are not many variables which are strongly correlated with eachother. The second plot shows us the count of the response variables. From this plot we can observe that the data is imbalanced, with much more 0's than 1's.
+Similarlily, seasonality seemingly exists, and and mid-late weekday counts are higher. 
 
 <p align="center">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/day.png?raw=true" width="350" title="hover text">
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/month.png?raw=true" width="350" alt="accessibility text">
 </p>
 
-  
+# Feature Selection Procedures
+
+Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection.
+
+
 
