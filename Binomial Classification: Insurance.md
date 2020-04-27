@@ -239,5 +239,15 @@ Similarlily, seasonality seemingly exists, and and mid-late weekday counts are h
 
 Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection.
 
-
-
+## Stepwise
+````{r}
+  model <- glm(Y ~., data = traindata_matrix, family = binomial,maxit=1000) %>% stepAIC(trace = FALSE)
+  stepwisedata <- colnames(model$data)
+  stepformu <- as.formula(paste(stepwisedata[1],'~',paste(stepwisedata[-1],collapse = '+')))
+  step_glm <- glm(formula = stepformu, data = as.data.frame(traindata_matrix), family = binomial)
+  step_feature_data <- step_glm$data
+  2.Stepwise
+  HighLeverage_Step <- cooks.distance(step_glm) > (4/nrow(step_feature_data))
+  LargeResiduals_Step <- rstudent(step_glm) > 3
+  step_feature_data_or <- step_feature_data[!HighLeverage_Step & !LargeResiduals_Step,]
+````
