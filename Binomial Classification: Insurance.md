@@ -239,15 +239,52 @@ Similarlily, seasonality seemingly exists, and and mid-late weekday counts are h
 
 Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection.
 
-## Stepwise
-````{r}
+## Stepwise Procedure
+
+A stepwise procedure was first used to find a group of variables that were significant in explaining the response. Stepwise variable selection starts with no predictors in the model and then at each step along the way either enter or remove a predictor based on the partial F-tests. The procedure stops when no more predictors can be justifiably entered or removed from the model, thereby leading to a ”final model.”
+
+````
   model <- glm(Y ~., data = traindata_matrix, family = binomial,maxit=1000) %>% stepAIC(trace = FALSE)
   stepwisedata <- colnames(model$data)
   stepformu <- as.formula(paste(stepwisedata[1],'~',paste(stepwisedata[-1],collapse = '+')))
   step_glm <- glm(formula = stepformu, data = as.data.frame(traindata_matrix), family = binomial)
   step_feature_data <- step_glm$data
-  2.Stepwise
+````
+
+## LASSO Procedure
+
+The LASSO (Least Absolute Shrinkage and Selection Operator) is a method of automatic variable selection which can be used to select predictors X* of a target variable Y from a larger set of potential or candidate predictors X. Lasso was introduced in order to improve the prediction accuracy and interpretability of regression models by altering the model fitting process to select only a subset of the provided covariates for use in the final model rather than using all of them. Prior to lasso, the most widely used method for choosing which covariates to include was stepwise selection. Stepwise, however, can sometimes make prediction errors worse. 
+
+```{r}
+  folds=10
+  trace=F
+  alpha=1
+  glmnet1<-cv.glmnet(X,Y,family='binomial',nfolds=folds,type.measure='class',alpha =alpha)
+  co<-coef(glmnet1,s = "lambda.1se")
+  inds<-which(co!=0)
+  variables<-row.names(co)[inds]
+  variables<-variables[!(variables %in% '(Intercept)')];
+  lassresults <- c('Y',variables)
+  lassformu <- as.formula(paste(lassresults[1],'~',paste(lassresults[-1],collapse = '+')))
+ ```
+ 
+## Recursive Feature Elimination
+
+Recursive feature elimination (RFE) is a feature selection method that fits a model and removes the weakest feature (or features) until the specified number of features is reached.
+
+```{r}
+RFE_model <- rfe(x, Y,
+             sizes = 10:20,
+             rfeControl = rfeControl(functions = lmFuncs, 
+             number = 15))
+RFE_model$variables
+```
+
+# Influential Point Detection
+
+````
+ Stepwise
   HighLeverage_Step <- cooks.distance(step_glm) > (4/nrow(step_feature_data))
   LargeResiduals_Step <- rstudent(step_glm) > 3
   step_feature_data_or <- step_feature_data[!HighLeverage_Step & !LargeResiduals_Step,]
-````
+  ````
