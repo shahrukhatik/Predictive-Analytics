@@ -237,7 +237,7 @@ Similarlily, seasonality seemingly exists, and and mid-late weekday counts are h
 
 # Feature Selection Procedures
 
-Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection.
+Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection. To keep the project uploaded on Github relatively simple, the LASSO feature selected codes will be posted. 
 
 ## Stepwise Procedure
 
@@ -249,6 +249,7 @@ A stepwise procedure was first used to find a group of variables that were signi
   stepformu <- as.formula(paste(stepwisedata[1],'~',paste(stepwisedata[-1],collapse = '+')))
   step_glm <- glm(formula = stepformu, data = as.data.frame(traindata_matrix), family = binomial)
   step_feature_data <- step_glm$data
+  ##Holdout similar like LASSO
 ````
 
 ## LASSO Procedure
@@ -266,6 +267,12 @@ The LASSO (Least Absolute Shrinkage and Selection Operator) is a method of autom
   variables<-variables[!(variables %in% '(Intercept)')];
   lassresults <- c('Y',variables)
   lassformu <- as.formula(paste(lassresults[1],'~',paste(lassresults[-1],collapse = '+')))
+  lass_glm <- glm(formula = lassformu, data = as.data.frame(traindata_matrix), family = binomial)
+  lass_feature_data <- lass_glm$data
+  lass_feature_data_holdout <- houldoutdata_matrix %>% dplyr::select(x1 ,x2 , x3 , x4 , x5 , x9 , x10 , x12 , x14 , x18 , x19, x20 , x21 , x22 , x24 , x25 , x27 , x29 , x30 , x31 , x33 , x37 , x38 , x40 , x41 , x43 , x44 , x47 , x49 , x50 , x51 , 
+ x52 , x56 , x57 , x58 , x61 , x63 , x66 , x70 , x71 , x72 , x73 , x74 , x75 , x77 , x78 , x79 , x80 , x83 , x85 , x86 , 
+x91 , x94 , x95 , x96 , x97 , x98 , x99 , x34chevrolet ,x35monday , x35thursday , x35tuesday , x35wednesday , x45n001 , 
+x45n002 , x45n003 , x45p000 , x45p001 , x45p002 , x68Aug ,x68Dev , x68Jun , x68Mar , x68May , x68Nov , x68Oct , x68sept.)
  ```
  
 ## Recursive Feature Elimination
@@ -278,13 +285,17 @@ RFE_model <- rfe(x, Y,
              rfeControl = rfeControl(functions = lmFuncs, 
              number = 15))
 RFE_model$variables
+##Holdout similar like LASSO
 ```
 
-# Influential Point Detection
+# Influential Point Detection'
+
+Our next aspect of trying to improve the fit of the model involved identifying and inspecting leverage, outlier and influential observations. A leverage value is considered large if it is more than twice the mean leverage.
+Standardized residual (internally studentized) is the residual divided by estimated standard deviation. As a rule of thumb, the standardized residual less than -2 or greater than +2 may indicate that the point is an outlier. After identifying individuals that were both a combination of an outlier and an influential point, these observations were removed.
 
 ````
- Stepwise
-  HighLeverage_Step <- cooks.distance(step_glm) > (4/nrow(step_feature_data))
-  LargeResiduals_Step <- rstudent(step_glm) > 3
-  step_feature_data_or <- step_feature_data[!HighLeverage_Step & !LargeResiduals_Step,]
+  #1. Lasso
+  HighLeverage_Lasso <- cooks.distance(lass_glm) > (4/nrow(lass_feature_data))
+  LargeResiduals_Lasso <- rstudent(lass_glm) > 3
+  lass_feature_data_or <- lass_feature_data[!HighLeverage_Lasso & !LargeResiduals_Lasso,]
   ````
