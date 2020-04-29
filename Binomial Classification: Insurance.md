@@ -288,7 +288,7 @@ RFE_model$variables
 ##Holdout similar like LASSO
 ```
 
-# Influential Point Detection'
+# Influential Point Detection
 
 Our next aspect of trying to improve the fit of the model involved identifying and inspecting leverage, outlier and influential observations. A leverage value is considered large if it is more than twice the mean leverage.
 Standardized residual (internally studentized) is the residual divided by estimated standard deviation. As a rule of thumb, the standardized residual less than -2 or greater than +2 may indicate that the point is an outlier. After identifying individuals that were both a combination of an outlier and an influential point, these observations were removed.
