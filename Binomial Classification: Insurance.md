@@ -235,6 +235,10 @@ Similarlily, seasonality seemingly exists, and and mid-late weekday counts are h
   <img src="https://github.com/shahrukhatik/Predictive-Analytics/blob/master/Images/month.png?raw=true" width="350" alt="accessibility text">
 </p>
 
+# Unbalanced Data and how to tackle the problem
+
+As we saw from the figure above, this dataset had a classical unbalanced data problem. As we're primarily interested in predicting 1's, having an absurd amount of 0's often creates the problem the accurately assessing the variation in predicting 1's. There are several methods of dealing with this issue, and for this particular problem, we'll be applying a sampling methodolgy. The two main approaches to randomly resampling an imbalanced dataset are to delete examples from the majority class, called undersampling, and to duplicate examples from the minority class, called oversampling. We'll be applying these techniques to balance the dataset, to train a more robust model.
+
 # Feature Selection Procedures
 
 Feature selection procedures are more often that not, a method to remove noise from data. Although many models such as Neural Networks are in their own way, a feature selection method, a pre-existing feature selection may provide a better prediction. It's always best to build models with both the full and the reduced model(from feature selection methods) and compare to for prediction/inference. For this project, Recursive Feature Elimination(RFE), LASSO and a stepwise procedure was used for feature selection. To keep the project uploaded on Github relatively simple, the LASSO feature selected codes will be posted. 
